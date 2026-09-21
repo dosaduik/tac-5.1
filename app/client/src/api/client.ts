@@ -56,6 +56,17 @@ export const api = {
     });
   },
   
+  // Generate a random natural language query suggestion
+  async generateRandomQuery(request: RandomQueryRequest = { llm_provider: 'openai' }): Promise<RandomQueryResponse> {
+    return apiRequest<RandomQueryResponse>('/random-query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    });
+  },
+
   // Get database schema
   async getSchema(): Promise<DatabaseSchemaResponse> {
     return apiRequest<DatabaseSchemaResponse>('/schema');

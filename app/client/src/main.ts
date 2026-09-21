@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeQueryInput();
   initializeFileUpload();
   initializeModal();
+  initializeRandomQueryButton();
   loadDatabaseSchema();
 });
 
@@ -45,6 +46,34 @@ function initializeQueryInput() {
   queryInput.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       queryButton.click();
+    }
+  });
+}
+
+// Random Query Functionality
+function initializeRandomQueryButton() {
+  const randomQueryButton = document.getElementById('random-query-button') as HTMLButtonElement;
+  const queryInput = document.getElementById('query-input') as HTMLTextAreaElement;
+
+  randomQueryButton.addEventListener('click', async () => {
+    randomQueryButton.disabled = true;
+    const originalContent = randomQueryButton.innerHTML;
+    randomQueryButton.innerHTML = '<span class="loading"></span>';
+
+    try {
+      const response = await api.generateRandomQuery({ llm_provider: 'openai' });
+
+      if (response.error) {
+        displayError(response.error);
+      } else {
+        // Always overwrite whatever is currently in the field
+        queryInput.value = response.query;
+      }
+    } catch (error) {
+      displayError(error instanceof Error ? error.message : 'Failed to generate a random query');
+    } finally {
+      randomQueryButton.disabled = false;
+      randomQueryButton.innerHTML = originalContent;
     }
   });
 }
