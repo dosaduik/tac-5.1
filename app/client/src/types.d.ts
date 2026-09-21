@@ -25,6 +25,16 @@ interface QueryResponse {
   error?: string;
 }
 
+// Random Query Types
+interface RandomQueryRequest {
+  llm_provider: "openai" | "anthropic";
+}
+
+interface RandomQueryResponse {
+  query: string;
+  error?: string;
+}
+
 // Database Schema Types
 interface ColumnInfo {
   name: string;

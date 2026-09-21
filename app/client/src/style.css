@@ -79,8 +79,14 @@ h2 {
 
 .query-controls {
   display: flex;
-  gap: 1rem;
+  justify-content: space-between;
   margin-top: 1rem;
+  align-items: center;
+}
+
+.query-controls-primary {
+  display: flex;
+  gap: 1rem;
   align-items: center;
 }
 

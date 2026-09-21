@@ -12,6 +12,8 @@ from core.data_models import (
     FileUploadResponse,
     QueryRequest,
     QueryResponse,
+    RandomQueryRequest,
+    RandomQueryResponse,
     DatabaseSchemaResponse,
     InsightsRequest,
     InsightsResponse,
@@ -20,7 +22,7 @@ from core.data_models import (
     ColumnInfo
 )
 from core.file_processor import convert_csv_to_sqlite, convert_json_to_sqlite, convert_jsonl_to_sqlite
-from core.llm_processor import generate_sql
+from core.llm_processor import generate_sql, generate_random_query
 from core.sql_processor import execute_sql_safely, get_database_schema
 from core.insights import generate_insights
 from core.sql_security import (
@@ -145,6 +147,24 @@ async def process_natural_language_query(request: QueryRequest) -> QueryResponse
             execution_time_ms=0,
             error=str(e)
         )
+
+@app.post("/api/random-query", response_model=RandomQueryResponse)
+async def generate_random_query_endpoint(request: RandomQueryRequest) -> RandomQueryResponse:
+    """Generate a random natural language query suggestion based on the current schema"""
+    try:
+        schema_info = get_database_schema()
+        if not schema_info.get('tables'):
+            raise Exception("No tables available. Upload data first to generate a query suggestion.")
+
+        query = generate_random_query(schema_info, request.llm_provider)
+
+        response = RandomQueryResponse(query=query)
+        logger.info(f"[SUCCESS] Random query generated: {query}")
+        return response
+    except Exception as e:
+        logger.error(f"[ERROR] Random query generation failed: {str(e)}")
+        logger.error(f"[ERROR] Full traceback:\n{traceback.format_exc()}")
+        return RandomQueryResponse(query="", error=str(e))
 
 @app.get("/api/schema", response_model=DatabaseSchemaResponse)
 async def get_database_schema_endpoint() -> DatabaseSchemaResponse:
