@@ -104,7 +104,7 @@ class TestGenerateRandomQuery:
             mock_client.messages.create.assert_called_once()
 
             call_args = mock_client.messages.create.call_args
-            assert call_args[1]['model'] == 'claude-3-haiku-20240307'
+            assert call_args[1]['model'] == 'claude-haiku-4-5'
             assert call_args[1]['temperature'] == 0.7
             assert call_args[1]['max_tokens'] == 500
 
